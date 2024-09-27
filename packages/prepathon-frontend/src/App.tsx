@@ -1,16 +1,17 @@
-import ClientExample from "./client-example"
-import { SessionProvider } from "@hono/auth-js/react"
+// import ClientExample from './client-example'
+import { SessionProvider } from '@hono/auth-js/react'
 
-import Navbar from "@/components/layout/navbar"
+import Navbar from '@/components/layout/navbar'
+import Login from './pages/Login'
 
 export default function App() {
-
   return (
     <SessionProvider>
-      <div className="flex flex-col justify-between w-full h-full min-h-screen">
+      <div className='min-h-screen'>
         <Navbar />
-        <main className="flex-auto w-full max-w-3xl px-4 py-4 mx-auto sm:px-6 md:py-6">
-          <ClientExample />
+        <main className='container mx-auto'>
+          {/* <ClientExample /> */}
+          <Login />
         </main>
       </div>
     </SessionProvider>
