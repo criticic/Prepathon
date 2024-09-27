@@ -7,38 +7,19 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import ChatbotPage from './pages/chatbot.tsx';
-import HistoryPage from './pages/history.tsx';
 import LandingPage from './pages/landing.tsx';
 import AuthPage from './pages/auth.tsx';
-import ResponsePage from './pages/response.tsx';
 import EmailVerficationPage from './pages/emailverification.tsx';
 import ForgotPasswordPage from './pages/forgotpass.tsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
-  },
-  {
-    path: "/chat",
-    element: <ChatbotPage/>,
-  },
-  {
-    path: "/history",
-    element: <HistoryPage/>,
-  },
-  {
-    path: "/landing",
     element: <LandingPage/>,
   },
   {
     path: "/auth",
     element: <AuthPage/>,
-  },
-  {
-    path: "/response",
-    element: <ResponsePage/>,
   },
   {
     path: "/forgotpassword",

@@ -19,7 +19,7 @@ export default function EmailVerificationPage() {
             Verify OTP
           </Button>
           <div className="text-center mt-4">
-            <a href="#resend-otp" className="text-sm text-indigo-500 hover:underline">
+            <a href="/emailverify" className="text-sm text-indigo-500 hover:underline">
               Didn't receive an OTP? Resend
             </a>
           </div>

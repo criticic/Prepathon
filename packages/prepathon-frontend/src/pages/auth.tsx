@@ -1,12 +1,14 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
 export default function AuthPage() {
+  const navigate = useNavigate()
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-500 via-pink-500 to-red-500">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-6 text-neutral-800">
-          Turn your thoughts into reality
+          Gain valueable insights now
         </h1>
         <div className="space-y-4">
         <Input
@@ -23,7 +25,9 @@ export default function AuthPage() {
             Continue with email
           </Button>
           <div className="text-center mt-4">
-            <button className="text-sm text-orange-500 hover:underline">
+            <button className="text-sm text-orange-500 hover:underline"
+            onClick={()=>navigate('/forgotpassword')}
+            >
               Forgot password?
             </button>
           </div>
