@@ -19,7 +19,7 @@ import LoginPage from './pages/login.tsx';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
+    element: <LandingPage/>,
   },
   {
     path: "/chat",

@@ -1,10 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useState } from "react";
 
 export default function AuthPage() {
   const [darkMode, setDarkMode] = useState(true);
-
+  const navigate = useNavigate()
   return (
     <div className={`flex min-h-screen items-center justify-center ${darkMode ? 'bg-neutral-900' : 'bg-neutral-50'}`}>
       <div className="absolute top-4 right-4">
@@ -25,7 +26,9 @@ export default function AuthPage() {
         </h1>
 
         <p className={`text-center mb-4 ${darkMode ? 'text-neutral-400' : 'text-neutral-600'}`}>
-          Already have an account? <span className="text-orange-500 hover:underline cursor-pointer">Login</span>
+          Already have an account? <span className="text-orange-500 hover:underline cursor-pointer"
+          onClick={() => navigate('/login')}
+          >Login</span>
         </p>
 
         <div className="space-y-4">
@@ -39,7 +42,9 @@ export default function AuthPage() {
             placeholder="Password"
             className={`w-full ${darkMode ? 'bg-neutral-700 text-white' : 'bg-neutral-100 text-black'}`}
           />
-          <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-lg">
+          <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-lg"
+          onClick={() => navigate('/chat')}
+          >
             Sign up
           </Button>
 

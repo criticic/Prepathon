@@ -13,6 +13,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
+import { useNavigate } from "react-router-dom";
 
 ChartJS.register(
   CategoryScale,
@@ -116,7 +117,8 @@ export default function LandingPage() {
     },
   }), [darkMode]);
 
-  return (
+  const navigate = useNavigate()
+  return (    
     <div className={`min-h-screen ${darkMode ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-900'}`}>
       <div className="container mx-auto px-4 py-8">
         <header className="flex justify-between items-center mb-16">
@@ -137,7 +139,9 @@ export default function LandingPage() {
           <p className="text-xl mb-8 text-neutral-400">
             Engineered for Real-Time Innovation.
           </p>
-          <Button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-md">
+          <Button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-md"
+          onClick={() => navigate('/auth')}
+          >
             Get Started
           </Button>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">

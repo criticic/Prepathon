@@ -25,6 +25,8 @@ export default function ChatbotPage() {
       setMessages((prevMessages) => [...prevMessages, input]);
       setInput("");
     }
+
+    navigate('/response')
   };
 
   useEffect(() => {
