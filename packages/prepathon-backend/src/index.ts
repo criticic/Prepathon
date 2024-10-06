@@ -2,7 +2,7 @@ import CredentialsProvider from '@auth/core/providers/credentials';
 import GitHub from '@auth/core/providers/github';
 import Google from '@auth/core/providers/google';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { authHandler, initAuthConfig, verifyAuth } from '@hono/auth-js';
 import {
     generateAuthenticationOptions,
@@ -346,7 +346,101 @@ app.get('/companies/raw-data/:id', async (c) => {
 app.get('/companies/gemini-analyze/:id', async (c) => {
     try {
         const genAI = new GoogleGenerativeAI(c.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({
+            model: 'gemini-1.5-flash',
+            generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                    type: SchemaType.OBJECT,
+                    properties: {
+                        analysis: {
+                            type: SchemaType.OBJECT,
+                            properties: {
+                                growth: {
+                                    type: SchemaType.OBJECT,
+                                    properties: {
+                                        revenue: { type: SchemaType.STRING },
+                                        expense: { type: SchemaType.STRING },
+                                        market_share: {
+                                            type: SchemaType.STRING,
+                                        },
+                                        overall: { type: SchemaType.STRING },
+                                    },
+                                },
+                                stability: {
+                                    type: SchemaType.OBJECT,
+                                    properties: {
+                                        revenue: { type: SchemaType.STRING },
+                                        expense: { type: SchemaType.STRING },
+                                        market_share: {
+                                            type: SchemaType.STRING,
+                                        },
+                                        overall: { type: SchemaType.STRING },
+                                    },
+                                },
+                                key_insights: {
+                                    type: SchemaType.OBJECT,
+                                    properties: {
+                                        revenue_and_expense: {
+                                            type: SchemaType.STRING,
+                                        },
+                                        market_share_fluctuations: {
+                                            type: SchemaType.STRING,
+                                        },
+                                        diversity_score: {
+                                            type: SchemaType.STRING,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        predictions: {
+                            type: SchemaType.OBJECT,
+                            properties: {
+                                stock_price: {
+                                    type: SchemaType.OBJECT,
+                                    properties: {
+                                        domestic: { type: SchemaType.NUMBER },
+                                        global: { type: SchemaType.NUMBER },
+                                    },
+                                },
+                                market_share: {
+                                    type: SchemaType.OBJECT,
+                                    properties: {
+                                        domestic: { type: SchemaType.NUMBER },
+                                        global: { type: SchemaType.NUMBER },
+                                    },
+                                },
+                                revenue: {
+                                    type: SchemaType.OBJECT,
+                                    properties: {
+                                        domestic: { type: SchemaType.NUMBER },
+                                        global: { type: SchemaType.NUMBER },
+                                    },
+                                },
+                                expense: {
+                                    type: SchemaType.OBJECT,
+                                    properties: {
+                                        domestic: { type: SchemaType.NUMBER },
+                                        global: { type: SchemaType.NUMBER },
+                                    },
+                                },
+                                overall: { type: SchemaType.STRING },
+                            },
+                        },
+                        explanation_of_predictions: {
+                            type: SchemaType.OBJECT,
+                            properties: {
+                                stock_price: { type: SchemaType.STRING },
+                                market_share: { type: SchemaType.STRING },
+                                revenue: { type: SchemaType.STRING },
+                                expense: { type: SchemaType.STRING },
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
         const id = c.req.param('id');
         const company = data.find((company) => company.sl_no === parseInt(id));
@@ -366,6 +460,10 @@ app.get('/companies/gemini-analyze/:id', async (c) => {
     - Country: ${company.country}
     - Diversity Score: ${company.diversity}
 
+    Comment on the growth, stability of the company inferring from the data.
+    Predict the next year’s stock price, market share, revenue, expense than this
+    company domestically and globally (compute all). 
+    Note that in this prediction you should be thinking about how each factor is affected by the other factors
     Provide a detailed financial analysis based solely on the provided data, including key insights and recommendations for investment. 
     Some values are synthetic, generated using a machine learning model for predictive purposes (this information should NOT be included in the analysis). 
 
@@ -376,6 +474,8 @@ app.get('/companies/gemini-analyze/:id', async (c) => {
 `;
 
         const result = await model.generateContent([prompt]);
+
+        console.log(result);
 
         return c.json({ result });
     } catch (error) {

@@ -71,13 +71,63 @@ export type CompanyData = {
     market_share: YearlyData[];
 };
 
+interface GeminiAnalysis {
+    analysis?: {
+        growth?: {
+            revenue?: string;
+            expense?: string;
+            market_share?: string;
+            overall?: string;
+        };
+        stability?: {
+            revenue?: string;
+            expense?: string;
+            market_share?: string;
+            overall?: string;
+        };
+        key_insights?: {
+            revenue_and_expense?: string;
+            market_share_fluctuations?: string;
+            diversity_score?: string;
+        };
+    };
+    predictions?: {
+        stock_price?: {
+            domestic?: string;
+            global?: string;
+        };
+        market_share?: {
+            domestic?: string;
+            global?: string;
+        };
+        revenue?: {
+            domestic?: string;
+            global?: string;
+        };
+        expense: {
+            domestic?: string;
+            global?: string;
+        };
+        overall?: string;
+    };
+    explanation_of_predictions?: {
+        stock_price?: string;
+        market_share?: string;
+        revenue?: string;
+        expense?: string;
+    };
+}
+
 export default function ResponsePage() {
+    const [geminiAnalysis, setGeminiAnalysis] = useState<GeminiAnalysis | null>(
+        null
+    );
     const location = useLocation();
     const navigate = useNavigate();
     const barRef = useRef(null);
     const theme = localStorage.getItem('theme') || 'light';
     const [darkMode, setdarkMode] = useState(theme === 'dark');
-    const [geminiAnalysis, setGeminiAnalysis] = useState('');
+    // const [geminiAnalysis, setGeminiAnalysis] = useState<object>({});
 
     useEffect(() => {
         const fetchGeminiAnalysis = async () => {
@@ -101,10 +151,32 @@ export default function ResponsePage() {
                 const analysisText =
                     data.result?.response?.candidates?.[0]?.content?.parts?.[0]
                         ?.text || 'No analysis available.';
-                setGeminiAnalysis(analysisText);
+                setGeminiAnalysis(JSON.parse(analysisText));
             } catch (error) {
                 console.error('Error fetching Gemini analysis:', error);
-                setGeminiAnalysis('Failed to load Gemini analysis.');
+                setGeminiAnalysis({
+                    analysis: {
+                        growth: {
+                            revenue: 'Failed to load Gemini analysis.',
+                            expense: 'Failed to load Gemini analysis.',
+                            market_share: 'Failed to load Gemini analysis.',
+                            overall: 'Failed to load Gemini analysis.',
+                        },
+                        stability: {
+                            revenue: 'Failed to load Gemini analysis.',
+                            expense: 'Failed to load Gemini analysis.',
+                            market_share: 'Failed to load Gemini analysis.',
+                            overall: 'Failed to load Gemini analysis.',
+                        },
+                        key_insights: {
+                            revenue_and_expense:
+                                'Failed to load Gemini analysis.',
+                            market_share_fluctuations:
+                                'Failed to load Gemini analysis.',
+                            diversity_score: 'Failed to load Gemini analysis.',
+                        },
+                    },
+                });
             }
         };
 
@@ -189,9 +261,9 @@ export default function ResponsePage() {
                 const params = new URLSearchParams(location.search);
                 const id = params.get('id');
 
-                // if (!id) {
-                //     navigate('/chat');
-                // }
+                if (!id) {
+                    navigate('/computation');
+                }
                 const response = await fetch(
                     `http://localhost:5000/companies/raw-data/${id}`,
                     {
@@ -500,7 +572,7 @@ export default function ResponsePage() {
                         <div
                             className={`rounded-xl bg-white p-4 shadow-box_shadow dark:bg-gradient-to-b dark:from-[#222120] dark:via-[#1A1919] dark:to-[#171717]`}
                         >
-                            <h3 className="mb-2 text-center text-xl font-semibold text-primary">
+                            <h3 className="m-1 mb-2 text-center text-xl font-semibold text-primary">
                                 Market Share
                             </h3>
                             <Bar
@@ -528,20 +600,335 @@ export default function ResponsePage() {
                         />
                     </div>
                     <div className="col-span-2">
-                        <Card className="h-full">
+                        <Card className="h-full bg-background">
                             <CardHeader>
-                                <h3 className="text-center text-xl font-semibold text-primary">
+                                <h3 className="m-1 text-center text-xl font-semibold text-primary">
                                     Gemini Analysis
                                 </h3>
                             </CardHeader>
                             <CardContent>
-                                <div className="max-h-96 overflow-y-auto">
+                                <div className="shadow-lg max-h-96 overflow-y-auto rounded-lg bg-background p-6">
                                     {geminiAnalysis ? (
-                                        <ReactMarkdown>
-                                            {geminiAnalysis}
-                                        </ReactMarkdown>
+                                        <>
+                                            {/* Analysis Section */}
+                                            <h1 className="m-1 mb-4 text-2xl font-bold text-primary">
+                                                {companyData.company} Analysis
+                                            </h1>
+
+                                            {/* Growth Analysis */}
+                                            <h5 className="mt-4 text-lg font-semibold text-orange-600 dark:text-orange-400">
+                                                Growth
+                                            </h5>
+                                            <div className="mt-2">
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Revenue:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis?.analysis
+                                                            ?.growth?.revenue
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Expense:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis.analysis
+                                                            ?.growth?.expense
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Market Share:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis?.analysis
+                                                            ?.growth
+                                                            ?.market_share
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Overall:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis.analysis
+                                                            ?.growth?.overall
+                                                    }
+                                                </p>
+                                            </div>
+
+                                            {/* Stability Analysis */}
+                                            <h5 className="mt-6 text-lg font-semibold text-orange-600 dark:text-orange-400">
+                                                Stability
+                                            </h5>
+                                            <div className="mt-2">
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Revenue:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis.analysis
+                                                            ?.stability?.revenue
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Expense:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis.analysis
+                                                            ?.stability?.expense
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Market Share:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis.analysis
+                                                            ?.stability
+                                                            ?.market_share
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Overall:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis?.analysis
+                                                            ?.stability?.overall
+                                                    }
+                                                </p>
+                                            </div>
+
+                                            {/* Key Insights */}
+                                            <h5 className="mt-6 text-lg font-semibold text-orange-600 dark:text-orange-400">
+                                                Key Insights
+                                            </h5>
+                                            <div className="mt-2">
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Revenue and Expense:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis?.analysis
+                                                            ?.key_insights
+                                                            ?.revenue_and_expense
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Market Share
+                                                        Fluctuations:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis?.analysis
+                                                            ?.key_insights
+                                                            ?.market_share_fluctuations
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Diversity Score:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis?.analysis
+                                                            ?.key_insights
+                                                            ?.diversity_score
+                                                    }
+                                                </p>
+                                            </div>
+
+                                            {/* Predictions Section */}
+                                            <h4 className="mt-8 text-3xl font-bold text-primary">
+                                                Predictions
+                                            </h4>
+
+                                            {/* Stock Price Predictions */}
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <h5 className="mt-4 text-lg font-semibold text-orange-600 dark:text-orange-400">
+                                                        Stock Price
+                                                    </h5>
+                                                    <div className="mt-2">
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Domestic:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.stock_price
+                                                                    ?.domestic
+                                                            }
+                                                        </p>
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Global:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.stock_price
+                                                                    ?.global
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <h5 className="mt-4 text-lg font-semibold text-orange-600 dark:text-orange-400">
+                                                        Market Share
+                                                    </h5>
+                                                    <div className="mt-2">
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Domestic:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.market_share
+                                                                    ?.domestic
+                                                            }
+                                                        </p>
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Global:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.market_share
+                                                                    ?.global
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <h5 className="mt-4 text-lg font-semibold text-orange-600 dark:text-orange-400">
+                                                        Revenue
+                                                    </h5>
+                                                    <div className="mt-2">
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Domestic:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.revenue
+                                                                    ?.domestic
+                                                            }
+                                                        </p>
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Global:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.revenue
+                                                                    ?.global
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <h5 className="mt-4 text-lg font-semibold text-orange-600 dark:text-orange-400">
+                                                        Expense
+                                                    </h5>
+                                                    <div className="mt-2">
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Domestic:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.expense
+                                                                    ?.domestic
+                                                            }
+                                                        </p>
+                                                        <p className="m-1 text-primary">
+                                                            <strong className="font-bold">
+                                                                Global:
+                                                            </strong>{' '}
+                                                            {
+                                                                geminiAnalysis
+                                                                    ?.predictions
+                                                                    ?.expense
+                                                                    ?.global
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p className="m-1 text-primary">
+                                                <strong className="font-bold">
+                                                    Overall:
+                                                </strong>{' '}
+                                                {
+                                                    geminiAnalysis?.predictions
+                                                        ?.overall
+                                                }
+                                            </p>
+
+                                            {/* Explanation of Predictions */}
+                                            <h4 className="mt-8 text-xl font-bold text-orange-500 dark:text-orange-400">
+                                                Explanation of Predictions
+                                            </h4>
+                                            <div className="mt-2">
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Stock Price:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis
+                                                            ?.explanation_of_predictions
+                                                            ?.stock_price
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Market Share:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis
+                                                            ?.explanation_of_predictions
+                                                            ?.market_share
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Revenue:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis
+                                                            ?.explanation_of_predictions
+                                                            ?.revenue
+                                                    }
+                                                </p>
+                                                <p className="m-1 text-primary">
+                                                    <strong className="font-bold">
+                                                        Expense:
+                                                    </strong>{' '}
+                                                    {
+                                                        geminiAnalysis
+                                                            ?.explanation_of_predictions
+                                                            ?.expense
+                                                    }
+                                                </p>
+                                            </div>
+                                        </>
                                     ) : (
-                                        <p>Loading Gemini analysis...</p>
+                                        <p className="text-center text-gray-500">
+                                            Loading Gemini analysis...
+                                        </p>
                                     )}
                                 </div>
                             </CardContent>
